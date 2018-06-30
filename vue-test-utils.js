@@ -2701,15 +2701,17 @@ function vmCtorMatchesName (vm, name) {
 }
 
 function vmCtorMatchesSelector (component, selector) {
+  /*
+   * Comment this in so test can pass
+   * potential fix
+   */
   if (component.$options._componentTag) {
     const selectorName = (selector.options.name)
     const tagToName = capitalize(camelize(component.$options._componentTag))
     console.warn("Here is the workaround")
     return selectorName === tagToName
   }
-  //console.log(camelize(selector))
-  console.log(`vmCtorMatchesSelector - component`, component.$options._componentTag)
-  console.log(`vmCtorMatchesSelector - selector`, selector.options.name)
+  */
   var Ctor = selector._Ctor || (selector.options && selector.options._Ctor);
   if (!Ctor) {
     return false
