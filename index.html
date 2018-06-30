@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <script src="https://cdn.rawgit.com/vuejs/vue/dev/dist/vue.min.js"></script>
+  <script src="https://cdn.rawgit.com/vuejs/vue/dev/packages/vue-template-compiler/browser.js"></script>
+  <script src="vue-test-utils.js"></script>
+  <!--<script src="https://cdn.rawgit.com/vuejs/vue-test-utils/dev/packages/test-utils/dist/vue-test-utils.iife.js"></script>-->
+  <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
+  <link href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css" rel="stylesheet" />
+  <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+  <script>mocha.setup('bdd')</script>
+</head>
+
+<body>
+<div id="mocha"></div>
+
+<script>
+function assert(actual, expected) {
+  if (actual != expected) {
+    throw Error("やばい")
+  }
+}
+
+const MustDoItem = Vue.component('MustDoItem', {
+  name: "MustDoItem",
+  props: {
+    id: {
+      type: Number,
+      required: true
+    },
+    
+    text: {
+      type: String,
+      required: true
+    }
+  },
+  template: `
+  <div>
+    <div class="id">{{ id }}</div>
+    <div class="text">{{ text }}</div>
+  </div>`
+})
+
+const { shallowMount } = VueTestUtils
+
+describe("MustDoItem", () => {
+  it("idとtextをレンダーする", () => {
+    const wrapper = shallowMount(MustDoItem, {
+      propsData: {
+        id: 1,
+        text: "テストを書く"
+      }
+    })
+
+    assert(wrapper.find(".id").text(), "1")
+    assert(wrapper.find(".text").text(), "テストを書く")
+  })
+})
+
+
+const MustDoList = Vue.component('must-do-list', {
+  data() {
+    return {
+      mustdos: mustdos
+    }
+  },
+  template: `
+  <div>
+    <must-do-item
+      v-for="mustdo in mustdos"
+      :key="mustdo.id"
+      :text="mustdo.text"
+      :id="mustdo.id"
+      class="must-do"
+    >
+    </must-do-item>
+  </div>
+  `
+})
+
+describe("MustDoList", () => {
+  it("MustdoItemを３つレンダーする", () => {
+    const wrapper = shallowMount(MustDoList, {
+      data() {
+        return {
+          mustdos: [
+            { id: 1, text: "テストを書く" },
+            { id: 2, text: "コードを書く" },
+            { id: 3, text: "Qiitaに投稿する" },
+          ]
+        }
+      }
+    })
+
+    // assert(wrapper.findAll(".must-do").length, 3)
+    assert(wrapper.findAll(MustDoItem).length, 3)
+  })
+})
+
+mocha.run()
+
+const mustdos =  [
+  { id: 1, text: "テストを書く" },
+  { id: 2, text: "コードを書く" },
+  { id: 3, text: "Qiitaに投稿する" },
+]
+
+document.addEventListener("DOMContentLoaded", () => {
+  new Vue({
+    el: "#app",
+    template: `
+      <must-do-list>
+      </must-do-list>
+    `
+  })
+})
+
+</script>
+
+
+
+<div style="margin-left: 50px">
+  <div id="app"></div>
+</div>
+
+</body>
+</html>
